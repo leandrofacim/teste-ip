@@ -28,7 +28,7 @@ class UserPost extends FormRequest
             'email' => 'required',
             'telefone' => 'required',
             'endereco' => 'required',
-            'curriculo' => 'mimes:pdf,doc,docx,txt|max:500',
+            'curriculo' => 'required|mimes:pdf,doc,docx,txt|max:500',
         ];
     }
 

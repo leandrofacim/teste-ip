@@ -30,7 +30,7 @@ class UserController extends Controller
     {
         try {
             if ($request->file('curriculo')->isValid()) {
-                // $nameFile = $request->name . '.' . $request->curriculo->exte?:?;nsion();
+                // $nameFile = $request->name . '.' . $request->curriculo->extension();
                 $curriculo = $request->file('curriculo')->store('curriculos');
             }
             $user = User::create([
@@ -39,7 +39,6 @@ class UserController extends Controller
                 'telefone' => $request->input('telefone'),
                 'endereco' => $request->input('endereco'),
                 'curriculo' => $curriculo,
-                'created_at' => date('Y-m-d H:i:s')
             ]);
     
             $ipUser = $request->ip();
