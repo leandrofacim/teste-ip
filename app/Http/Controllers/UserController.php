@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\UserPost;
 use App\Mail\UserPostSendEmail;
 use App\User;
+use Exception;
 use Illuminate\Support\Facades\Mail;
 
 class UserController extends Controller
@@ -27,27 +28,34 @@ class UserController extends Controller
      */
     public function store(UserPost $request)
     {
-        if ($request->file('curriculo')->isValid()) {
-            $nameFile = $request->nome . '.' . $request->curriculo->extension();
-            $curriculo = $request->file('curriculo')->storeAs('curriculos', $nameFile);
+        try {
+            if ($request->file('curriculo')->isValid()) {
+                // $nameFile = $request->name . '.' . $request->curriculo->exte?:?;nsion();
+                $curriculo = $request->file('curriculo')->store('curriculos');
+            }
+            $user = User::create([
+                'name' => $request->input('name'),
+                'email' => $request->input('email'),
+                'telefone' => $request->input('telefone'),
+                'endereco' => $request->input('endereco'),
+                'curriculo' => $curriculo,
+                'created_at' => date('Y-m-d H:i:s')
+            ]);
+    
+            $ipUser = $request->ip();
+            $user['ip'] = $ipUser;
+    
+            if ($user) Mail::to($user->email)->send(new UserPostSendEmail($user));
+            
+            return response()->json([
+                'data' => $user,
+                'message' => 'Dados enviado com sucesso!',
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'Erro: não foi possivel enviar os dados',
+            ], 404);
         }
-        $user = User::create([
-            'name' => $request->input('nome'),
-            'email' => $request->input('email'),
-            'telefone' => $request->input('telefone'),
-            'endereco' => $request->input('endereco'),
-            'curriculo' => $curriculo,
-            'created_at' => date('Y-m-d H:i:s')
-        ]);
-
-        $ipUser = $request->ip();
-        $user['ip'] = $ipUser;
-
-        if ($user) Mail::to($user->email)->send(new UserPostSendEmail($user));
-        
-        return response()->json([
-            'data' => $user,
-            'menssage' => 'Dados enviado com sucesso!',
-        ], 200);
+       
     }
 }

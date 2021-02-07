@@ -24,22 +24,21 @@ class UserPost extends FormRequest
     public function rules()
     {
         return [
-            'nome' => 'required',
+            'name' => 'required',
             'email' => 'required',
             'telefone' => 'required',
             'endereco' => 'required',
-            'curriculo' => 'required|mimes:pdf,doc,docx,txt|max:500',
+            'curriculo' => 'mimes:pdf,doc,docx,txt|max:500',
         ];
     }
 
     public function messages()
     {
         return [
-           'nome.require' => 'campo nome obrigatório',
+           'name.require' => 'campo nome obrigatório',
            'email.require' => 'campo email obrigatório' ,
            'telefone.require' => 'campo telefone obrigatório',
            'endereco.require' => 'campo endereco obrigatório',
-           'curriculo.require' => 'campo curriculo obrigatório',
         ];
     }
 }
