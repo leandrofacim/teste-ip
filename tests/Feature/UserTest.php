@@ -2,10 +2,12 @@
 
 namespace Tests\Feature;
 
+use App\Mail\UserPostSendEmail;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Http\File;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\File\UploadedFile as FileUploadedFile;
 use Tests\TestCase;
@@ -20,35 +22,42 @@ class UserTest extends TestCase
      *
      * @return void
      */
-    // public function testGet()
-    // {
-    //     $response = $this->get('api/users');
-
-    //     $response->assertStatus(200);
-    // }
-
-    public function testMethodPost()
+    public function testGet()
     {
-        $pathFile = new File(base_path('tests/resources/teste.pdf'));
-        // $file1 = UploadedFile::fake()->create('documents.pdf', 500, 'application/pdf');
-        $fileName = Storage::putFileAs('curriculos', $pathFile, 'curriculo.pdf');
-        
+        $response = $this->get('api/users');
+
+        $response->assertStatus(200);
+    }
+
+    public function test_method_store()
+    {
+        Mail::fake();
+
+        $sizeInKilobytes = 500;
+        $file = UploadedFile::fake()->create(
+            'document.pdf',
+            $sizeInKilobytes,
+            'application/pdf'
+        );
+
         $dados = [
             'name' => 'Leandro',
-            'email' => 'gdsadassd.facsim@hodddddssdddtmail.com',
+            'email' => 'leandro.facim@hotmail.com',
             'telefone' => '1111111111',
             'endereco' => 'Rua Lorem Ipisum',
-            'curriculo' => $fileName,
+            'curriculo' =>  $file,
         ];
-        $response = $this->json('POST', '/api/users', $dados);
+        $response = $this->postJson('/api/users', $dados);
         // dd($response->getContent());
         $response
-        ->assertStatus(200)
-        ->assertJson([
-            'data' => $dados,
-            'message' => 'Dados enviado com sucesso!',
+            ->assertStatus(201)
+            ->assertJson([
+                'created' => true,
+                'message' =>  'Dados enviado com sucesso!'
             ]);
-            
-        Storage::disk('curriculos')->assertExists($pathFile->hashName());
-        }
+
+        Storage::assertExists('curriculos/' . $file->hashName());
+        Storage::delete('curriculos/' . $file->hashName());
+        Mail::assertSent(UserPostSendEmail::class);
     }
+}

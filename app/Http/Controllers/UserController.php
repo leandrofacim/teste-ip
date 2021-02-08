@@ -47,11 +47,12 @@ class UserController extends Controller
             if ($user) Mail::to($user->email)->send(new UserPostSendEmail($user));
             
             return response()->json([
-                'data' => $user,
+                'created' => true,
                 'message' => 'Dados enviado com sucesso!',
-            ], 200);
+            ], 201);
         } catch (Exception $e) {
             return response()->json([
+                'created' => false,
                 'message' => 'Erro: não foi possivel enviar os dados',
             ], 404);
         }
