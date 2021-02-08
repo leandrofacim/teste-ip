@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UserPost extends FormRequest
+class UserPostRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,7 +25,7 @@ class UserPost extends FormRequest
     {
         return [
             'name' => 'required',
-            'email' => 'required',
+            'email' => 'email|required',
             'telefone' => 'required',
             'endereco' => 'required',
             'curriculo' => 'required|mimes:pdf,doc,docx,txt|max:500',

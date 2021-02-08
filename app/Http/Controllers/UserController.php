@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\UserPost;
+use App\Http\Requests\UserPostRequest;
 use App\Mail\UserPostSendEmail;
 use App\User;
 use Exception;
@@ -26,7 +26,7 @@ class UserController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(UserPost $request)
+    public function store(UserPostRequest $request)
     {
         try {
             if ($request->file('curriculo')->isValid()) {
